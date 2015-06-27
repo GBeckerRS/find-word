@@ -9,9 +9,9 @@ int main(int argc, char** argv)
         std::cout << "Valor de argv[" << index << "]: "\
         << argv[index] << std::endl;
 
-    Frase f("Uma frase completa");
+    Frase f("Uma frasé completa");
     std::cout << f.imprimeFrase() << std::endl;
-    f.procuraPalavra("frase");
+    f.procuraPalavra("frasé");
     std::cout << "Nova frase alterada: " << f.imprimeFrase() << std::endl;
 
     return 0;

@@ -50,14 +50,28 @@ char* Palavra::getPalavra_c()
 
 void Palavra::caixaBaixa()
 {
-    std::transform(this->_palavra->begin(),this->_palavra->end(),\
-    this->_palavra->begin(),::tolower);
+    this->alteraCaixa(false);
 }
 
 void Palavra::caixaAlta()
 {
+    this->alteraCaixa(true);
+}
 
-    std::transform(this->_palavra->begin(),this->_palavra->end(),\
-    this->_palavra->begin(),::toupper);
+// Metodos Privados
+
+void Palavra::alteraCaixa(bool modo)
+{
+    std::locale loc;
+    int tam = this->_palavra->size();
+    char* tmp = new char[tam+1];
+    std::strcpy(tmp,this->_palavra->c_str());
+
+    for(int index = 0; index < tam; index++)
+        if(modo)
+            tmp[index] = std::toupper(tmp[index],loc);
+        else
+            tmp[index] = std::tolower(tmp[index],loc);
+    *this->_palavra = (const char*)tmp;
 }
 

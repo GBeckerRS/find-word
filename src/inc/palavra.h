@@ -1,9 +1,9 @@
 #ifndef     PALAVRA_H
 #define     PALAVRA_H
 
-#include    <iostream>
 #include    <string>
-#include    <algorithm> //std::transform
+#include    <locale>    // std::locale, std::toupper
+#include    <cstring>   // std::strcoy
 
 class Palavra
 {
@@ -21,6 +21,9 @@ public:
 private:
     std::string* _palavra;
     int* _tamanho;
+
+    // Metodos privados
+    void alteraCaixa(bool modo);
 };
 
 #endif      //PALAVRA_H
