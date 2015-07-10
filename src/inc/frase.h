@@ -12,6 +12,7 @@ class Frase
 public:
     Frase(const std::string frase);
     Frase(const char* frase);
+    Frase(const Frase& frase);
     ~Frase();
 
     std::string imprimeFrase();

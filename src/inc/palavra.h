@@ -10,6 +10,7 @@ class Palavra
 public:
     Palavra(const std::string palavra);
     Palavra(const char* palavra);
+    Palavra(const Palavra& palavra);
     virtual ~Palavra();
 
     int getTamanho();
