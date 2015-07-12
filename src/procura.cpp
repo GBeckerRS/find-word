@@ -6,6 +6,9 @@
 Procura::Procura()
 {
     this->_frases = new std::list<Frase>;
+    this->_palavra = NULL;
+    this->_argumentoDesconhecido = NULL;
+    this->_imprimeMsg = 0;
 }
 
 /*
@@ -37,6 +40,7 @@ Procura::~Procura()
 int Procura::executar(int qtParametros, char** parametros)
 {
     this->_nomePrograma = new std::string(parametros[0]);
+    Frase* f = NULL;
 
     int index = 1;
     int op = 0;
@@ -45,25 +49,46 @@ int Procura::executar(int qtParametros, char** parametros)
         op = this->parserArgumentos(parametros[index]);
         switch(op)
         {
-            case 0: // Argumento desconhecido
-                std::cout << this->msgArgumentoDesconhecido(parametros[index]);
+            case 1: // Popula a lista de frases
+                f = new Frase(parametros[index+1]); //parametros[index+1]
+                this->_frases->push_back(*f);
             break;
-            case 1: // Frase
-                this->_frases->push_back(parametros[index+1]);
-            break;
-            case 2:
+            case 2: // Le de um arquivo
                 this->leArquivo(parametros[index+1]);
             break;
-            case 3: // Palavra
-                this->procuraPalavra(parametros[index+1]);
-                std::cout << this->imprimeFrases();
+            case 3: // Armazena a palavra
+                this->_palavra = new std::string(parametros[index+1]);
             break;
-            case 4: // Ajuda
-                std::cout << this->msgAjuda();
+            case 4: // Imprime a mensagem de ajuda
+                this->_imprimeMsg = 1;
+            break;
+            default:// Imprime a mensagem de argumento desconhecido
+                this->_imprimeMsg = 2;
+                this->_argumentoDesconhecido = new std::string(parametros[index]);
             break;
         };
         index += 2;
     }
+
+    if(this->_imprimeMsg == 1)
+    {
+        std::cout << this->msgAjuda();
+        return 0;
+    }
+    else
+    {
+        if(this->_imprimeMsg == 2)
+        {
+            std::cout << this->msgArgumentoDesconhecido(this->_argumentoDesconhecido->c_str());
+            return 0;
+        }
+    }
+
+    // Procura a palavra solicitada
+    procuraPalavra(this->_palavra->c_str());
+    // Imprime as frases carregadas
+    std::cout << this->imprimeFrases();
+
     return 0;
 }
 

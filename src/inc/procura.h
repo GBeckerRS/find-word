@@ -19,6 +19,9 @@ public:
 private:
     std::list<Frase>* _frases;
     std::string* _nomePrograma;
+    std::string* _palavra;
+    std::string* _argumentoDesconhecido;
+    int _imprimeMsg;
 
     // Metodos privados
     int parserArgumentos(const char* argumento);
