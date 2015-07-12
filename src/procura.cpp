@@ -51,6 +51,9 @@ int Procura::executar(int qtParametros, char** parametros)
             case 1: // Frase
                 this->_frases->push_back(parametros[index+1]);
             break;
+            case 2:
+                this->leArquivo(parametros[index+1]);
+            break;
             case 3: // Palavra
                 this->procuraPalavra(parametros[index+1]);
                 std::cout << this->imprimeFrases();
@@ -102,7 +105,9 @@ std::string Procura::msgAjuda()
     ss << "find-word: Implementacao minimalista do programa grep." << std::endl;
     ss << "find-word [opcao]... [argumento]..." << std::endl;
     ss << "\t" << "-f, -p" << std::endl;
-    ss << "\t\t" << "Carrega o conteudo de um arquivo ou uma frase" << std::endl;
+    ss << "\t\t" << "Carrega uma frase" << std::endl;
+    ss << "\t" << "-r, -i" << std::endl;
+    ss << "\t\t" << "Carrega o conteudo de um arquivo" << std::endl;
     ss << "\t" << "-l, -w" << std::endl;
     ss << "\t\t" << "Palavra que deve ser procurada" << std::endl;
     return (ss.str()).c_str();
@@ -111,7 +116,7 @@ std::string Procura::msgAjuda()
 /*
 *   msgArgumentoDesconhecido: Retorna mensagem indicando que o argumento recebido é inválido
 *
-*   parametos:
+*   Parametos:
 *       argumento = Argumento recebido
 *   Retorno = String contendo a mensagem para exibir
 */
@@ -151,5 +156,31 @@ std::string Procura::imprimeFrases()
         ss << f.imprimeFrase() << std::endl;
     }
     return ss.str();
+}
+
+/*
+*   leArquivo: Le o conteudo do arquivo e popula a lista de frases
+*
+*   Parametros
+*       nome = Nome do arquivo que sera lido
+*/
+void Procura::leArquivo(const char* nome)
+{
+    std::ifstream in;
+    in.open(nome);
+
+    if(in.is_open())
+    {
+        char* tmp = new char[80];
+        in.getline(tmp,80);
+        while(in.good())
+        {
+            this->_frases->push_back(tmp);
+            in.getline(tmp,80);
+        }
+    }
+    else
+        // Disparar uma excessao de erro
+        return;
 }
 

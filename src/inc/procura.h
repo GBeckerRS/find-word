@@ -4,6 +4,7 @@
 #include    <list>
 #include    <cstring>
 #include    <sstream>
+#include    <fstream>
 
 #include    "frase.h"
 
@@ -21,9 +22,11 @@ private:
 
     // Metodos privados
     int parserArgumentos(const char* argumento);
+    void procuraPalavra(const char* palavra);
+    void leArquivo(const char* nome);
+
     std::string msgAjuda();
     std::string msgArgumentoDesconhecido(const char* argumento);
-    void procuraPalavra(const char* palavra);
     std::string imprimeFrases();
 };
 
