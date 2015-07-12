@@ -53,7 +53,7 @@ int Procura::executar(int qtParametros, char** parametros)
             break;
             case 3: // Palavra
                 this->procuraPalavra(parametros[index+1]);
-                this->imprimeFrases();
+                std::cout << this->imprimeFrases();
             break;
             case 4: // Ajuda
                 std::cout << this->msgAjuda();
@@ -141,13 +141,15 @@ void Procura::procuraPalavra(const char* palavra)
 /*
 *   imprimeFrases: imprime as frases recebidas pelo programa
 */
-void Procura::imprimeFrases()
+std::string Procura::imprimeFrases()
 {
+    std::stringstream ss;
     std::list<Frase>::iterator it;
     for(it = this->_frases->begin(); it != this->_frases->end(); it++)
     {
         Frase f(*it);
-        std::cout << f.imprimeFrase() << std::endl;
+        ss << f.imprimeFrase() << std::endl;
     }
+    return ss.str();
 }
 

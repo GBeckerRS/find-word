@@ -24,7 +24,7 @@ private:
     std::string msgAjuda();
     std::string msgArgumentoDesconhecido(const char* argumento);
     void procuraPalavra(const char* palavra);
-    void imprimeFrases();
+    std::string imprimeFrases();
 };
 
 #endif      //PROCURA_H
