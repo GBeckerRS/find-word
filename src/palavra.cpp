@@ -5,6 +5,7 @@
 */
 Palavra::Palavra(const std::string palavra)
 {
+    // Tratar excessao do operador new
     this->_palavra = new std::string(palavra);
     this->_tamanho = new int((int)(this->_palavra->size()));
 }
@@ -14,6 +15,7 @@ Palavra::Palavra(const std::string palavra)
 */
 Palavra::Palavra(const char* palavra)
 {
+    // Tratar excessao do operador new
     this->_palavra = new std::string(palavra);
     this->_tamanho = new int((int)(this->_palavra->size()));
 }
@@ -23,6 +25,7 @@ Palavra::Palavra(const char* palavra)
 */
 Palavra::Palavra(const Palavra& palavra)
 {
+    // Tratar excessao do operador new
     this->_palavra = new std::string(*palavra._palavra);
     this->_tamanho = new int(*palavra._tamanho);
 }
@@ -50,6 +53,7 @@ Palavra::~Palavra()
 int Palavra::getTamanho()
 {
     if(!this->_tamanho)
+        // Tratar erro: palavra nao existe
         return 0;
     return *this->_tamanho;
 }
@@ -109,6 +113,7 @@ void Palavra::caixaAlta()
 */
 void Palavra::alteraCaixa(bool modo)
 {
+    // Tratar excessao do operador new
     std::locale loc;
     int tam = this->_palavra->size();
     char* tmp = new char[tam+1];
@@ -119,7 +124,6 @@ void Palavra::alteraCaixa(bool modo)
             tmp[i] = std::toupper(tmp[i],loc);
         else
             tmp[i] = std::tolower(tmp[i],loc);
-    //*this->_palavra = (const char*)tmp;
     delete this->_palavra;
     this->_palavra = NULL;
 
