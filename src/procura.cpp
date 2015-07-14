@@ -5,6 +5,7 @@
 */
 Procura::Procura()
 {
+    // Tratar excessao do operador new
     this->_frases = new std::list<Frase>;
     this->_palavra = NULL;
     this->_argumentoDesconhecido = NULL;
@@ -63,6 +64,7 @@ int Procura::executar(int qtParametros, char** parametros)
                 this->_imprimeMsg = 1;
             break;
             default:// Imprime a mensagem de argumento desconhecido
+                // Esse bloco deve fazer parte do bloco catch
                 this->_imprimeMsg = 2;
                 this->_argumentoDesconhecido = new std::string(parametros[index]);
             break;
@@ -115,6 +117,7 @@ int Procura::parserArgumentos(const char* argumento)
         return 3;
     else if(std::strcmp(argumento,"-a") == 0 || std::strcmp(argumento,"-h") == 0)
         return 4;
+    // lancar excessao argumento desconhecido
     return 0;
 }
 
@@ -164,6 +167,8 @@ void Procura::procuraPalavra(const char* palavra)
     std::list<Frase>::iterator it;
     for(it = this->_frases->begin(); it != this->_frases->end(); it++)
     {
+        // Tratar excessao lancado pelo metodo Frase::procuraPalavra
+        // E lancar excessao de palavra não encontrada
         (*it).procuraPalavra(palavra);
     }
 }
@@ -177,8 +182,9 @@ std::string Procura::imprimeFrases()
     std::list<Frase>::iterator it;
     for(it = this->_frases->begin(); it != this->_frases->end(); it++)
     {
-        Frase f(*it);
-        ss << f.imprimeFrase() << std::endl;
+        // Tratar excessao lancada pelo metodo Frase::imprimeFrase
+        // Lancar excessao: Frase nao carregada
+        ss << (*it).imprimeFrase() << std::endl;
     }
     return ss.str();
 }
@@ -205,7 +211,7 @@ void Procura::leArquivo(const char* nome)
         }
     }
     else
-        // Disparar uma excessao de erro
+        // Disparar excessao: Nao foi possivel carregar o arquivo
         return;
 }
 
