@@ -5,6 +5,7 @@
 */
 Frase::Frase(const std::string frase)
 {
+    //Tratar excessao do operador new
     this->_frase = new std::list<Palavra>();
     if(this->_frase)
         this->splitFrase(frase);
@@ -15,6 +16,7 @@ Frase::Frase(const std::string frase)
 */
 Frase::Frase(const char* frase)
 {
+    //Tratar excessao do operador new
     this->_frase = new std::list<Palavra>();
     if(this->_frase)
         this->splitFrase(frase);
@@ -25,7 +27,7 @@ Frase::Frase(const char* frase)
 */
 Frase::Frase(const Frase& frase)
 {
-    //this->_frase = new Frase(*frase._frase);
+    //Tratar excessao do operador new
     this->_frase = new std::list<Palavra>(*frase._frase);
 }
 
@@ -49,6 +51,9 @@ Frase::~Frase()
 */
 std::string Frase::imprimeFrase()
 {
+    if(!this->_frases)
+        //Nao exista frase carregada
+        return "";
     std::stringstream ss;
     std::list<Palavra>::iterator it;
 
@@ -71,6 +76,7 @@ std::string Frase::imprimeFrase()
 */
 bool Frase::procuraPalavra(const std::string palavra)
 {
+    // Tratar a excessao lancada pelo metodo procuraToken
     return this->procuraToken(palavra);
 }
 
@@ -84,6 +90,7 @@ bool Frase::procuraPalavra(const std::string palavra)
 */
 bool Frase::procuraPalavra(const char* palavra)
 {
+    // Tratar a excessao lancada pelo metodo procuraToken
     return this->procuraToken(palavra);
 }
 
@@ -126,6 +133,7 @@ bool Frase::procuraToken(std::string token)
             return true;
         }
     }
+    // lancar excessao de palavra nao encontrada
     return false;
 }
 
