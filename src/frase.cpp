@@ -51,7 +51,7 @@ Frase::~Frase()
 */
 std::string Frase::imprimeFrase()
 {
-    if(!this->_frases)
+    if(!this->_frase)
         //Nao exista frase carregada
         return "";
     std::stringstream ss;
