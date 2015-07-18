@@ -1,7 +1,7 @@
 #include    <iostream>
-#include    <map>
 
 #include    "inc/procura.h"
+#include    "inc/erros.h"
 
 int main(int argc, char** argv)
 {
