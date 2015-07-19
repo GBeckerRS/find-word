@@ -5,10 +5,16 @@
 */
 Frase::Frase(const std::string frase)
 {
-    //Tratar excessao do operador new
-    this->_frase = new std::list<Palavra>();
-    if(this->_frase)
-        this->splitFrase(frase);
+    try
+    {
+        this->_frase = new std::list<Palavra>();
+        if(this->_frase)
+            this->splitFrase(frase);
+    }
+    catch(std::bad_alloc& e)
+    {
+        throw FraseNaoCriada("Nao foi possivel criar a frase");
+    }
 }
 
 /*
@@ -16,10 +22,16 @@ Frase::Frase(const std::string frase)
 */
 Frase::Frase(const char* frase)
 {
-    //Tratar excessao do operador new
-    this->_frase = new std::list<Palavra>();
-    if(this->_frase)
-        this->splitFrase(frase);
+    try
+    {
+        this->_frase = new std::list<Palavra>();
+        if(this->_frase)
+            this->splitFrase(frase);
+    }
+    catch(std::bad_alloc& e)
+    {
+        throw FraseNaoCriada("Nao foi possivel criar a frase");
+    }
 }
 
 /*
@@ -27,8 +39,14 @@ Frase::Frase(const char* frase)
 */
 Frase::Frase(const Frase& frase)
 {
-    //Tratar excessao do operador new
-    this->_frase = new std::list<Palavra>(*frase._frase);
+    try
+    {
+        this->_frase = new std::list<Palavra>(*frase._frase);
+    }
+    catch(std::bad_alloc& e)
+    {
+        throw FraseNaoCriada("Nao foi possivel criar a frase");
+    }
 }
 
 /*
@@ -52,15 +70,23 @@ Frase::~Frase()
 std::string Frase::imprimeFrase()
 {
     if(!this->_frase)
-        //Nao exista frase carregada
-        return "";
+        throw NaoImprimeFrase("Nao foi possivel imprimir a frase");
+
     std::stringstream ss;
     std::list<Palavra>::iterator it;
 
-    for(it = this->_frase->begin(); it != this->_frase->end(); ++it)
+    try
     {
-        Palavra p(*it);
-        ss << p.getPalavra() << " ";
+        for(it = this->_frase->begin(); it != this->_frase->end(); ++it)
+        {
+            Palavra p(*it);
+            ss << p.getPalavra() << " ";
+        }
+    }
+    catch(Excessao e)
+    {
+        // PalavraNaoExiste e PalavraNaoCriada
+        throw NaoImprimeFrase("Nao foi possivel imprimir a frase");
     }
 
     return ss.str();
@@ -76,8 +102,18 @@ std::string Frase::imprimeFrase()
 */
 bool Frase::procuraPalavra(const std::string palavra)
 {
-    // Tratar a excessao lancada pelo metodo procuraToken
-    return this->procuraToken(palavra);
+    bool resp = false;
+    try
+    {
+        resp = this->procuraToken(palavra);
+    }
+    catch(Excessao e)
+    {
+        // PalavraNaoExiste e PalavraNaoEncontrada
+        resp = false;
+    }
+
+    return resp;
 }
 
 /*
@@ -90,8 +126,18 @@ bool Frase::procuraPalavra(const std::string palavra)
 */
 bool Frase::procuraPalavra(const char* palavra)
 {
-    // Tratar a excessao lancada pelo metodo procuraToken
-    return this->procuraToken(palavra);
+    bool resp = false;
+    try
+    {
+        resp = this->procuraToken(palavra);
+    }
+    catch(Excessao e)
+    {
+        // PalavraNaoExiste e PalavraNaoEncontrada
+        resp = false;
+    }
+
+    return resp;
 }
 
 // ****** Metodos Privados ****** //
@@ -133,7 +179,7 @@ bool Frase::procuraToken(std::string token)
             return true;
         }
     }
-    // lancar excessao de palavra nao encontrada
-    return false;
+    std::string msg = "Nao foi encontrada a palavra: " + token;
+    throw PalavraNaoEncontrada(msg);
 }
 

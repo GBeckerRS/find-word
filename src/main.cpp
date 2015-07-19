@@ -5,8 +5,17 @@
 
 int main(int argc, char** argv)
 {
-    Procura* p = new Procura();
+    int resp = 0;
+    try
+    {
+        Procura* p = new Procura();
+        resp = p->executar(argc,argv);
+    }
+    catch(std::exception e)
+    {
+        resp = -1;
+    }
 
-    return p->executar(argc,argv);
+    return resp;
 }
 

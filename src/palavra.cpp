@@ -5,9 +5,15 @@
 */
 Palavra::Palavra(const std::string palavra)
 {
-    // Tratar excessao do operador new
-    this->_palavra = new std::string(palavra);
-    this->_tamanho = new int((int)(this->_palavra->size()));
+    try
+    {
+        this->inicializa(palavra);
+    }
+    catch(std::bad_alloc& e)
+    {
+        std::string msg = "Nao foi possivel criar a palavra: " + palavra;
+        throw PalavraNaoCriada(msg);
+    }
 }
 
 /*
@@ -15,9 +21,16 @@ Palavra::Palavra(const std::string palavra)
 */
 Palavra::Palavra(const char* palavra)
 {
-    // Tratar excessao do operador new
-    this->_palavra = new std::string(palavra);
-    this->_tamanho = new int((int)(this->_palavra->size()));
+    try
+    {
+        this->inicializa(palavra);
+    }
+    catch(std::bad_alloc& e)
+    {
+        std::string p(palavra);
+        std::string msg = "Nao foi possivel criar a palavra: " + p;
+        throw PalavraNaoCriada(msg);
+    }
 }
 
 /*
@@ -25,9 +38,15 @@ Palavra::Palavra(const char* palavra)
 */
 Palavra::Palavra(const Palavra& palavra)
 {
-    // Tratar excessao do operador new
-    this->_palavra = new std::string(*palavra._palavra);
-    this->_tamanho = new int(*palavra._tamanho);
+    try
+    {
+        this->inicializa(*palavra._palavra);
+    }
+    catch(std::bad_alloc& e)
+    {
+        std::string msg = "Nao foi possivel criar a palavra: " + *palavra._palavra;
+        throw PalavraNaoCriada(msg);
+    }
 }
 
 /*
@@ -53,8 +72,8 @@ Palavra::~Palavra()
 int Palavra::getTamanho()
 {
     if(!this->_tamanho)
-        // Tratar erro: palavra nao existe
-        return 0;
+        throw PalavraNaoExiste("Palavra nao existe");
+
     return *this->_tamanho;
 }
 
@@ -66,25 +85,26 @@ int Palavra::getTamanho()
 */
 std::string Palavra::getPalavra()
 {
-    if(this->_palavra)
-    {
-        std::string tmp_pal(*this->_palavra);
-        return tmp_pal;
-    }
-    else
-    {
-        return "";
-    }
+    if(!this->_palavra)
+        throw PalavraNaoExiste("Palavra nao existe");
+
+    std::string tmp_pal(*this->_palavra);
+    return tmp_pal;
 }
 
 /*
 *   getPalavra_c: Retorna a palavra
 *
 *   Retorno:
-*       String contendo a palavra
-*/char* Palavra::getPalavra_c()
+*       String C contendo a palavra
+*/
+char* Palavra::getPalavra_c()
 {
-    return (char*)(this->getPalavra()).c_str();
+    if(!this->_palavra)
+        throw PalavraNaoExiste("Palavra nao existe");
+
+    std::string tmp(*this->_palavra);
+    return (char*)tmp.c_str();
 }
 
 /*
@@ -92,6 +112,9 @@ std::string Palavra::getPalavra()
 */
 void Palavra::caixaBaixa()
 {
+    if(!this->_palavra)
+        throw PalavraNaoExiste("Palavra nao existe");
+
     this->alteraCaixa(false);
 }
 
@@ -100,6 +123,9 @@ void Palavra::caixaBaixa()
 */
 void Palavra::caixaAlta()
 {
+    if(!this->_palavra)
+        throw PalavraNaoExiste("Palavra nao existe");
+
     this->alteraCaixa(true);
 }
 
@@ -124,9 +150,16 @@ void Palavra::alteraCaixa(bool modo)
             tmp[i] = std::toupper(tmp[i],loc);
         else
             tmp[i] = std::tolower(tmp[i],loc);
+
     delete this->_palavra;
     this->_palavra = NULL;
 
     this->_palavra = new std::string(tmp);
+}
+
+void Palavra::inicializa(const std::string palavra)
+{
+        this->_palavra = new std::string(palavra);
+        this->_tamanho = new int((int)(this->_palavra->size()));
 }
 

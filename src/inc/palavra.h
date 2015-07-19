@@ -5,6 +5,8 @@
 #include    <locale>    // std::locale, std::toupper
 #include    <cstring>   // std::strcoy
 
+#include    "erros.h"
+
 class Palavra
 {
 public:
@@ -25,6 +27,7 @@ private:
 
     // Metodos privados
     void alteraCaixa(bool modo);
+    void inicializa(const std::string palavra);
 };
 
 #endif      //PALAVRA_H

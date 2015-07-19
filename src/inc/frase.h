@@ -5,6 +5,7 @@
 #include    <sstream>
 #include    <list>
 
+#include    "erros.h"
 #include    "palavra.h"
 
 class Frase

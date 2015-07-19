@@ -5,11 +5,18 @@
 */
 Procura::Procura()
 {
-    // Tratar excessao do operador new
-    this->_frases = new std::list<Frase>;
-    this->_palavra = NULL;
-    this->_argumentoDesconhecido = NULL;
-    this->_imprimeMsg = 0;
+    try
+    {
+        this->_frases = new std::list<Frase>;
+        this->_palavra = NULL;
+        this->_argumentoDesconhecido = NULL;
+        this->_imprimeMsg = 0;
+        this->_qtFrases = 0;
+    }
+    catch(std::bad_alloc& e)
+    {
+        throw ProcuraNaoCriado("Nao foi possivel iniciar a busca");
+    }
 }
 
 /*
@@ -43,53 +50,70 @@ int Procura::executar(int qtParametros, char** parametros)
     this->_nomePrograma = new std::string(parametros[0]);
     Frase* f = NULL;
 
-    int index = 1;
-    int op = 0;
-    while(index < qtParametros)
+    try
     {
-        op = this->parserArgumentos(parametros[index]);
-        switch(op)
+        int index = 1;
+        int op = 0;
+        while(index < qtParametros)
         {
-            case 1: // Popula a lista de frases
-                f = new Frase(parametros[index+1]); //parametros[index+1]
-                this->_frases->push_back(*f);
-            break;
-            case 2: // Le de um arquivo
-                this->leArquivo(parametros[index+1]);
-            break;
-            case 3: // Armazena a palavra
-                this->_palavra = new std::string(parametros[index+1]);
-            break;
-            case 4: // Imprime a mensagem de ajuda
-                this->_imprimeMsg = 1;
-            break;
-            default:// Imprime a mensagem de argumento desconhecido
-                // Esse bloco deve fazer parte do bloco catch
-                this->_imprimeMsg = 2;
-                this->_argumentoDesconhecido = new std::string(parametros[index]);
-            break;
-        };
-        index += 2;
-    }
+            op = this->parserArgumentos(parametros[index]);
+            switch(op)
+            {
+                case 1: // Popula a lista de frases
+                    f = new Frase(parametros[index+1]); //parametros[index+1]
+                    this->_frases->push_back(*f);
+                break;
+                case 2: // Le de um arquivo
+                    this->leArquivo(parametros[index+1]);
+                break;
+                case 3: // Armazena a palavra
+                    this->_palavra = new std::string(parametros[index+1]);
+                break;
+                case 4: // Imprime a mensagem de ajuda
+                    this->_imprimeMsg = 1;
+                break;
+                default:// Imprime a mensagem de argumento desconhecido
+                    this->_imprimeMsg = 2;
+                    this->_argumentoDesconhecido = new std::string(parametros[index]);
+                break;
+            };
+            index += 2;
+        }
 
-    if(this->_imprimeMsg == 1)
-    {
-        std::cout << this->msgAjuda();
-        return 0;
-    }
-    else
-    {
-        if(this->_imprimeMsg == 2)
+        if(this->_imprimeMsg == 1)
         {
-            std::cout << this->msgArgumentoDesconhecido(this->_argumentoDesconhecido->c_str());
+            std::cout << this->msgAjuda();
             return 0;
         }
-    }
+        else
+        {
+            if(this->_imprimeMsg == 2)
+            {
+                std::cout << this->msgArgumentoDesconhecido(this->_argumentoDesconhecido->c_str());
+                return 0;
+            }
+            else
+            {
+                if(!this->_palavra)
+                {
+                    throw PalavraNaoCarregada("Palavra nao foi recebida");
+                }
+            }
+        }
 
-    // Procura a palavra solicitada
-    procuraPalavra(this->_palavra->c_str());
-    // Imprime as frases carregadas
-    std::cout << this->imprimeFrases();
+        // Procura a palavra solicitada
+        procuraPalavra(this->_palavra->c_str());
+        // Imprime as frases carregadas
+        std::cout << this->imprimeFrases();
+    }
+    catch(Excessao& e)
+    {
+        return -1;
+    }
+    catch(std::exception& e)
+    {
+        return -1;
+    }
 
     return 0;
 }
@@ -117,7 +141,6 @@ int Procura::parserArgumentos(const char* argumento)
         return 3;
     else if(std::strcmp(argumento,"-a") == 0 || std::strcmp(argumento,"-h") == 0)
         return 4;
-    // lancar excessao argumento desconhecido
     return 0;
 }
 
@@ -165,12 +188,17 @@ std::string Procura::msgArgumentoDesconhecido(const char* argumento)
 void Procura::procuraPalavra(const char* palavra)
 {
     std::list<Frase>::iterator it;
+    bool resp = false;
     for(it = this->_frases->begin(); it != this->_frases->end(); it++)
     {
-        // Tratar excessao lancado pelo metodo Frase::procuraPalavra
-        // E lancar excessao de palavra não encontrada
-        (*it).procuraPalavra(palavra);
+        if((*it).procuraPalavra(palavra))
+        {
+            resp = true;
+        }
     }
+
+    if(!resp)
+        throw PalavraNaoEncontrada("A palavra nao foi encontrada");
 }
 
 /*
@@ -180,11 +208,17 @@ std::string Procura::imprimeFrases()
 {
     std::stringstream ss;
     std::list<Frase>::iterator it;
-    for(it = this->_frases->begin(); it != this->_frases->end(); it++)
+
+    try
     {
-        // Tratar excessao lancada pelo metodo Frase::imprimeFrase
-        // Lancar excessao: Frase nao carregada
-        ss << (*it).imprimeFrase() << std::endl;
+        for(it = this->_frases->begin(); it != this->_frases->end(); it++)
+        {
+            ss << (*it).imprimeFrase() << std::endl;
+        }
+    }
+    catch(NaoImprimeFrase e)
+    {
+        throw ArgumentoDesconhecido("Uma frase nao foi carregada");
     }
     return ss.str();
 }
@@ -208,10 +242,12 @@ void Procura::leArquivo(const char* nome)
         {
             this->_frases->push_back(tmp);
             in.getline(tmp,80);
+            this->_qtFrases++;
         }
     }
     else
-        // Disparar excessao: Nao foi possivel carregar o arquivo
-        return;
+    {
+        throw NaoAbreArquivo("Nao foi possivel abrir o arquivo");
+    }
 }
 

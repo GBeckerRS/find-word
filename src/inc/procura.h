@@ -6,6 +6,7 @@
 #include    <sstream>
 #include    <fstream>
 
+#include    "erros.h"
 #include    "frase.h"
 
 class Procura
@@ -22,6 +23,7 @@ private:
     std::string* _palavra;
     std::string* _argumentoDesconhecido;
     int _imprimeMsg;
+    int _qtFrases;  // apenas para depuracao
 
     // Metodos privados
     int parserArgumentos(const char* argumento);
