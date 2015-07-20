@@ -3,7 +3,7 @@
 /*
 *   Construtor
 */
-Procura::Procura()
+Procura::Procura ()
 {
     try
     {
@@ -13,23 +13,23 @@ Procura::Procura()
         this->_imprimeMsg = 0;
         this->_qtFrases = 0;
     }
-    catch(std::bad_alloc& e)
+    catch (std::bad_alloc& e)
     {
-        throw ProcuraNaoCriado("Nao foi possivel iniciar a busca");
+        throw ProcuraNaoCriado ("Nao foi possivel iniciar a busca");
     }
 }
 
 /*
 *   Destrutor
 */
-Procura::~Procura()
+Procura::~Procura ()
 {
-    if(this->_frases)
+    if (this->_frases)
     {
         delete this->_frases;
         this->_frases = NULL;
     }
-    if(this->_nomePrograma)
+    if (this->_nomePrograma)
     {
         delete this->_nomePrograma;
         this->_nomePrograma = NULL;
@@ -45,76 +45,84 @@ Procura::~Procura()
 *   Retorno:
 *       Resultado da execucao do programa
 */
-int Procura::executar(int qtParametros, char** parametros)
+int Procura::executar (int qtParametros, char** parametros)
 {
-    this->_nomePrograma = new std::string(parametros[0]);
+    this->_nomePrograma = new std::string (parametros[0]);
     Frase* f = NULL;
 
     try
     {
         int index = 1;
         int op = 0;
-        while(index < qtParametros)
+        while (index < qtParametros)
         {
-            op = this->parserArgumentos(parametros[index]);
-            switch(op)
+            op = this->parserArgumentos (parametros[index]);
+            switch (op)
             {
                 case 1: // Popula a lista de frases
-                    f = new Frase(parametros[index+1]); //parametros[index+1]
-                    this->_frases->push_back(*f);
+                    f = new Frase (parametros[index+1]); //parametros[index+1]
+                    this->_frases->push_back (*f);
                 break;
                 case 2: // Le de um arquivo
-                    this->leArquivo(parametros[index+1]);
+                    this->leArquivo (parametros[index+1]);
                 break;
                 case 3: // Armazena a palavra
-                    this->_palavra = new std::string(parametros[index+1]);
+                    this->_palavra = new std::string (parametros[index+1]);
                 break;
                 case 4: // Imprime a mensagem de ajuda
                     this->_imprimeMsg = 1;
                 break;
                 default:// Imprime a mensagem de argumento desconhecido
                     this->_imprimeMsg = 2;
-                    this->_argumentoDesconhecido = new std::string(parametros[index]);
+                    this->_argumentoDesconhecido = new std::string (parametros[index]);
                 break;
             };
             index += 2;
         }
 
-        if(this->_imprimeMsg == 1)
+        if (this->_imprimeMsg == 1)
         {
-            std::cout << this->msgAjuda();
+            std::cout << this->msgAjuda ();
             return 0;
         }
         else
         {
-            if(this->_imprimeMsg == 2)
+            if (this->_imprimeMsg == 2)
             {
-                std::cout << this->msgArgumentoDesconhecido(this->_argumentoDesconhecido->c_str());
+                std::cout << this->msgArgumentoDesconhecido (this->_argumentoDesconhecido->c_str());
                 return 0;
             }
             else
             {
-                if(!this->_palavra)
+                if (!this->_palavra)
                 {
-                    throw PalavraNaoCarregada("Palavra nao foi recebida");
+                    throw PalavraNaoCarregada ("Palavra nao foi recebida");
                 }
             }
         }
 
         // Procura a palavra solicitada
-        procuraPalavra(this->_palavra->c_str());
+        procuraPalavra (this->_palavra->c_str ());
         // Imprime as frases carregadas
-        std::cout << this->imprimeFrases();
+        std::cout << this->imprimeFrases ();
     }
-    catch(Excessao& e)
+    catch (Excessao& e)
     {
         return -1;
     }
-    catch(std::exception& e)
+    catch (std::exception& e)
     {
         return -1;
     }
 
+    return 0;
+}
+int executarBETA (int qtParametros, char** parametros)
+{
+    if (qtParametros < 3)
+    {
+        return -1;
+    }
     return 0;
 }
 

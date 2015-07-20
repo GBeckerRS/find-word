@@ -15,7 +15,8 @@ public:
     Procura();
     virtual ~Procura();
 
-    int executar(int qtParametros, char** parametros);
+    int executar (int qtParametros, char** parametros);
+    int executarBETA (int qtParametros, char** parametros);
 
 private:
     std::list<Frase>* _frases;
@@ -26,13 +27,13 @@ private:
     int _qtFrases;  // apenas para depuracao
 
     // Metodos privados
-    int parserArgumentos(const char* argumento);
-    void procuraPalavra(const char* palavra);
-    void leArquivo(const char* nome);
+    int parserArgumentos (const char* argumento);
+    void procuraPalavra (const char* palavra);
+    void leArquivo (const char* nome);
 
-    std::string msgAjuda();
-    std::string msgArgumentoDesconhecido(const char* argumento);
-    std::string imprimeFrases();
+    std::string msgAjuda ();
+    std::string msgArgumentoDesconhecido (const char* argumento);
+    std::string imprimeFrases ();
 };
 
 #endif      //PROCURA_H
