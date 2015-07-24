@@ -8,10 +8,15 @@ Procura::Procura ()
     try
     {
         this->_frases = new std::list<Frase>;
+        this->_palavras = new std::list<Palavra>;
         this->_palavra = NULL;
-        this->_argumentoDesconhecido = NULL;
+        this->_argDesconhecido = NULL;
         this->_imprimeMsg = 0;
         this->_qtFrases = 0;
+        this->flag.frase = false;
+        this->flag.palavra = false;
+        this->flag.mAjuda = false;
+        this->flag.mArgDesconhecido = false;
     }
     catch (std::bad_alloc& e)
     {
@@ -47,79 +52,70 @@ Procura::~Procura ()
 */
 int Procura::executar (int qtParametros, char** parametros)
 {
-    this->_nomePrograma = new std::string (parametros[0]);
-    Frase* f = NULL;
-
     try
     {
+        this->_nomePrograma = new std::string (parametros[0]);
         int index = 1;
-        int op = 0;
-        while (index < qtParametros)
+        do
         {
-            op = this->parserArgumentos (parametros[index]);
-            switch (op)
+            switch (this->parserArgumentos (parametros[index]))
             {
                 case 1: // Popula a lista de frases
-                    f = new Frase (parametros[index+1]); //parametros[index+1]
-                    this->_frases->push_back (*f);
+                    this->_frases->push_back (*(new Frase (parametros[index+1])));
+                    this->flag.frase = true;
                 break;
-                case 2: // Le de um arquivo
+                case 2: // Le de um arquivo e popula lista de frases
                     this->leArquivo (parametros[index+1]);
                 break;
-                case 3: // Armazena a palavra
-                    this->_palavra = new std::string (parametros[index+1]);
+                case 3: // Popula a llista de palavras
+                    this->_palavras->push_back (*(new Palavra (parametros[index+1])));
+                    this->flag.palavra = true;
                 break;
                 case 4: // Imprime a mensagem de ajuda
-                    this->_imprimeMsg = 1;
+                    this->flag.mAjuda = true;
                 break;
                 default:// Imprime a mensagem de argumento desconhecido
-                    this->_imprimeMsg = 2;
-                    this->_argumentoDesconhecido = new std::string (parametros[index]);
+                    this->_argDesconhecido = new std::string (parametros[index]);
+                    this->flag.mArgDesconhecido = true;
                 break;
             };
             index += 2;
         }
+        while (index <= (qtParametros-1));
 
-        if (this->_imprimeMsg == 1)
+        if (this->flag.mAjuda)
         {
             std::cout << this->msgAjuda ();
             return 0;
         }
         else
         {
-            if (this->_imprimeMsg == 2)
+            if (this->flag.mArgDesconhecido)
             {
-                std::cout << this->msgArgumentoDesconhecido (this->_argumentoDesconhecido->c_str());
+                std::cout << this->msgArgumentoDesconhecido ();
                 return 0;
-            }
-            else
-            {
-                if (!this->_palavra)
-                {
-                    throw PalavraNaoCarregada ("Palavra nao foi recebida");
-                }
             }
         }
 
-        // Procura a palavra solicitada
-        procuraPalavra (this->_palavra->c_str ());
-        // Imprime as frases carregadas
-        std::cout << this->imprimeFrases ();
+        if (!this->flag.palavra || !this->flag.frase)
+        {
+            return -1;
+        }
+
+        if (this->flag.palavra)
+        {
+            // realiza a busca
+            this->procuraPalavra ();
+            // Imprime as frases carregadas
+            std::cout << this->imprimeFrases ();
+        }
+
     }
     catch (Excessao& e)
     {
         return -1;
     }
-    catch (std::exception& e)
-    {
-        return -1;
-    }
-
-    return 0;
-}
-int executarBETA (int qtParametros, char** parametros)
-{
-    if (qtParametros < 3)
+    catch (std::exception)
     {
         return -1;
     }
@@ -179,10 +175,10 @@ std::string Procura::msgAjuda()
 *       argumento = Argumento recebido
 *   Retorno = String contendo a mensagem para exibir
 */
-std::string Procura::msgArgumentoDesconhecido(const char* argumento)
+std::string Procura::msgArgumentoDesconhecido ()
 {
     std::stringstream ss;
-    ss << "A opcao " << argumento << " e invalida!" << std::endl;
+    ss << "A parametro " << *this->_argDesconhecido << " e invalido!" << std::endl;
     ss << "Utilize " << *this->_nomePrograma << " -a para mais informacoes." << std::endl;
     return (ss.str()).c_str();
 }
@@ -202,6 +198,33 @@ void Procura::procuraPalavra(const char* palavra)
         if((*it).procuraPalavra(palavra))
         {
             resp = true;
+        }
+    }
+
+    if(!resp)
+        throw PalavraNaoEncontrada("A palavra nao foi encontrada");
+}
+
+/*
+*   procuraPalavra: Procura por uma palavra na lista de frases
+*
+*   Parametros:
+*       palavra = Palavra que deve ser pesquisada
+*/
+void Procura::procuraPalavra ()
+{
+    std::list<Frase>::iterator itFrase;
+    std::list<Palavra>::iterator itPalavra;
+
+    bool resp = false;
+    for (itFrase = this->_frases->begin (); itFrase != this->_frases->end (); itFrase++)
+    {
+        for (itPalavra = this->_palavras->begin (); itPalavra != this->_palavras->end (); itPalavra++)
+        {
+            if ((*itFrase).procuraPalavra ((*itPalavra).getPalavra ()))
+            {
+                resp = true;
+            }
         }
     }
 
